@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Login</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="login-form" id="loginFormContainer">
+            <h2>Iniciar Sesión</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Usuario:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Contraseña:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn-login">Iniciar Sesión</button>
+            </form>
+            <div id="error-message" class="error-message"></div>
+            <button id="toggleFormButton" class="toggle-form-btn">¿No tienes cuenta? Regístrate aquí</button>
+        </div>
+        
+        <div class="register-form" id="registerFormContainer" style="display: none;">
+            <h2>Registro</h2>
+            <form id="registerForm">
+                <input type="text" id="newUsername" placeholder="Nombre de usuario" required />
+                <input type="text" id="newEmail" placeholder="Email" required />
+                <input type="password" id="newPassword" placeholder="Contraseña" required />
+                <input type="password" id="confirmPassword" placeholder="Confirmar Contraseña" required />
+                <button type="submit">Registrar</button>
+                <div id="register-error-message"></div>
+            </form>
+            <button id="toggleFormButtonBack" class="toggle-form-btn">¿Ya tienes cuenta? Inicia sesión aquí</button>
+        </div>
+    </div>
+    <script src="./app.js"></script>
+</body>
+</html>

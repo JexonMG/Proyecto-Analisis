@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil de Usuario</title>
+    <link rel="stylesheet" href="profile.css">
+
+</head>
+<body>
+    <div class="user-panel">
+        <header>
+            <h1>Mi Perfil</h1>
+            <button onclick="logout()" class="btn-logout">Cerrar Sesión</button>
+        </header>
+        
+        <div class="profile-section">
+            <div class="profile-image-container">
+                <img src="../../uploads/default-profile.png" alt="Foto de perfil" class="profile-image" id="profileImage">
+                <div class="image-upload">
+                    <label for="profileImageInput">Cambiar foto</label>
+                    <input type="file" id="profileImageInput" accept="image/*" onchange="handleImageUpload(event)" style="display: none;">
+                </div>
+            </div>
+            
+            <div class="profile-info">
+                <h2 id="userName"></h2>
+                <p>Email: <span id="userEmail"></span></p>
+            </div>
+        </div>
+
+        <div class="qr-section">
+            <h3>Control de Entrada/Salida</h3>
+            <button onclick="showQRScanner()" class="btn-qr">Escanear QR</button>
+            <div id="qrCode"></div>
+        </div>
+
+        <div id="qrScanner" class="qr-scanner-modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close-modal" onclick="closeQRScanner()">&times;</span>
+                <h3>Escanear Código QR</h3>
+                <div id="reader"></div>
+                <div id="scanResult"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="profile.js"></script>
+    <script>
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                uploadProfileImage(file);
+            }
+        }
+
+        function showQRScanner() {
+            document.getElementById('qrScanner').style.display = 'block';
+            initializeQRScanner();
+        }
+
+        function closeQRScanner() {
+            document.getElementById('qrScanner').style.display = 'none';
+            if (html5QrCode) {
+                html5QrCode.stop();
+            }
+        }
+
+        let html5QrCode;
+
+        function initializeQRScanner() {
+            html5QrCode = new Html5Qrcode("reader");
+            const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+            html5QrCode.start(
+                { facingMode: "environment" },
+                config,
+                qrCodeSuccessCallback,
+                qrCodeErrorCallback
+            );
+        }
+
+        function qrCodeSuccessCallback(decodedText) {
+            document.getElementById('scanResult').innerHTML = `
+                <p>QR escaneado exitosamente!</p>
+                <p>Hora: ${new Date().toLocaleTimeString()}</p>
+            `;
+            // Aquí puedes agregar la lógica para registrar la entrada/salida
+            setTimeout(closeQRScanner, 2000);
+        }
+
+        function qrCodeErrorCallback(error) {
+            // console.error("Error al escanear QR:", error);
+        }
+    </script>
+</body>
+</html>
