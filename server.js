@@ -1,7 +1,5 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
-const multer = require('multer');
-const path = require('path');
 const { PrismaClient } = require('@prisma/client');
 const cors = require('cors');
 
@@ -9,57 +7,10 @@ const app = express();
 const prisma = new PrismaClient();
 
 app.use(cors());
-app.use(express.json()); // <-- Añadir esto
-app.use(express.urlencoded({ extended: true })); // <-- Añadir esto
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.get('/pages/index/index.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'pages', 'index', 'index.html'));
-});
-
-app.get('/pages/profile/profile.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'pages', 'profile', 'profile.html'));
-});
-
-app.get('/pages/admin/admin.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'pages', 'admin', 'admin.html'));
-});
-
-app.get('*', (req, res) => {
-    res.redirect('/pages/index/index.html');
-});
-
-
-// Configuración de Multer para subir imágenes
-const storage = multer.diskStorage({
-    destination: './public/uploads/',
-    filename: function(req, file, cb) {
-        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
-    }
-});
-
-const upload = multer({
-    storage: storage,
-    limits: { fileSize: 1000000 },
-    fileFilter: function(req, file, cb) {
-        checkFileType(file, cb);
-    }
-}).single('profileImage');
-
-// Verificar tipo de archivo
-function checkFileType(file, cb) {
-    const filetypes = /jpeg|jpg|png|gif/;
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = filetypes.test(file.mimetype);
-
-    if (mimetype && extname) {
-        return cb(null, true);
-    } else {
-        cb('Error: Solo se permiten imágenes');
-    }
-}
-
-// Ruta de login
+// Login route
 app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
 
@@ -74,123 +25,177 @@ app.post('/api/login', async (req, res) => {
             return res.status(401).json({ message: 'Contraseña incorrecta' });
         }
 
-        // Actualizar fecha de último login
+        // Update last login
         await prisma.user.update({
             where: { id: user.id },
             data: { lastLogin: new Date() }
         });
 
         res.json({
+            id: user.id,
             role: user.role,
             username: user.username,
             name: user.name,
-            email: user.email,
+            carnetNumber: user.carnetNumber,
+            career: user.career,
+            schedule: user.schedule,
             profileImage: user.profileImage
         });
     } catch (error) {
+        console.error('Login error:', error);
         res.status(500).json({ message: 'Error en el servidor' });
     }
 });
 
-// Ruta para actualizar imagen de perfil
-app.post('/api/upload-profile-image', upload, async (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({ message: 'No se subió ningún archivo' });
-    }
-
-    try {
-        const user = await prisma.user.findUnique({ where: { username: req.body.username } });
-        const profileImagePath = `/uploads/${req.file.filename}`;
-
-        const updatedUser = await prisma.user.update({
-            where: { username: req.body.username },
-            data: { profileImage: profileImagePath }
-        });
-
-        res.json({ profileImage: updatedUser.profileImage });
-    } catch (error) {
-        res.status(500).json({ message: 'Error al actualizar la imagen de perfil' });
-    }
-});
-
-// Ruta para obtener todos los usuarios (solo administrador)
-app.get('/api/users', async (req, res) => {
-    try {
-        const users = await prisma.user.findMany({
-            select: { id: true, username: true, name: true, email: true, role: true }
-        });
-        res.json(users);
-    } catch (error) {
-        res.status(500).json({ message: 'Error al obtener usuarios' });
-    }
-});
-
-// Ruta para crear un nuevo usuario
+// User creation route
 app.post('/api/users', async (req, res) => {
-    const { username, password, role, name, email } = req.body;
+    const { username, password, carnetNumber, career, schedule, profileImage } = req.body;
+    const role = req.body.role || 'user'; // Default role
 
     try {
+        if (!username || !password || !carnetNumber) {
+            return res.status(400).json({ message: 'Datos incompletos (se requieren username, password y carnetNumber)' });
+        }
+
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = await prisma.user.create({
             data: {
                 username,
                 password: hashedPassword,
                 role,
-                name,
-                email,
-                lastLogin: new Date()
+                carnetNumber,
+                career: career || "",
+                schedule: schedule || "",
+                profileImage,
+                lastLogin: null
             }
         });
 
-        res.json({ message: 'Usuario creado exitosamente', user: newUser });
+        res.status(201).json({ 
+            message: 'Usuario creado exitosamente', 
+            user: {
+                id: newUser.id,
+                username: newUser.username,
+                role: newUser.role,
+                carnetNumber: newUser.carnetNumber,
+                career: newUser.career,
+                schedule: newUser.schedule,
+                profileImage: newUser.profileImage
+            } 
+        });
     } catch (error) {
+        if (error.code === 'P2002') {
+            const target = error.meta.target;
+            let message = 'Error de duplicación';
+            if (target.includes('username')) message = 'Username ya existe';
+            if (target.includes('carnetNumber')) message = 'Número de carnet ya existe';
+            return res.status(409).json({ message });
+        }
+        console.error('User creation error:', error);
         res.status(500).json({ message: 'Error al crear usuario' });
     }
 });
 
-// Ruta para actualizar un usuario
+// Update user route
 app.put('/api/users/:id', async (req, res) => {
     const { id } = req.params;
-    const { password, username, role, name, email } = req.body;
+    const { password, username, role, carnetNumber, career, schedule, profileImage } = req.body;
 
     try {
-        const updatedData = {
+        const updateData = {
             username,
             role,
-            name,
-            email
+            carnetNumber,
+            career,
+            schedule,
+            profileImage
         };
 
         if (password) {
-            updatedData.password = await bcrypt.hash(password, 10);
+            updateData.password = await bcrypt.hash(password, 10);
         }
 
         const updatedUser = await prisma.user.update({
             where: { id: parseInt(id) },
-            data: updatedData
+            data: updateData
         });
 
-        res.json({ message: 'Usuario actualizado exitosamente', user: updatedUser });
+        res.json({ 
+            message: 'Usuario actualizado exitosamente', 
+            user: {
+                id: updatedUser.id,
+                username: updatedUser.username,
+                role: updatedUser.role,
+                carnetNumber: updatedUser.carnetNumber,
+                career: updatedUser.career,
+                schedule: updatedUser.schedule,
+                profileImage: updatedUser.profileImage
+            }
+        });
     } catch (error) {
+        console.error('User update error:', error);
+        if (error.code === 'P2002') {
+            const target = error.meta.target;
+            let message = 'Error de duplicación';
+            if (target.includes('username')) message = 'Username ya existe';
+            if (target.includes('carnetNumber')) message = 'Número de carnet ya existe';
+            return res.status(409).json({ message });
+        }
         res.status(500).json({ message: 'Error al actualizar usuario' });
     }
 });
 
-// Ruta para eliminar un usuario
-app.delete('/api/users/:id', async (req, res) => {
-    const { id } = req.params;
-
+// Get all users
+app.get('/api/users', async (req, res) => {
     try {
-        await prisma.user.delete({
-            where: { id: parseInt(id) }
+        const users = await prisma.user.findMany({
+            select: {
+                id: true,
+                username: true,
+                name: true,
+                carnetNumber: true,
+                career: true,
+                schedule: true,
+                role: true,
+                profileImage: true,
+                lastLogin: true
+            }
         });
-        res.json({ message: 'Usuario eliminado exitosamente' });
+        res.json(users);
     } catch (error) {
-        res.status(500).json({ message: 'Error al eliminar usuario' });
+        console.error('Error fetching users:', error);
+        res.status(500).json({ message: 'Error al obtener usuarios' });
     }
 });
 
-// Iniciar el servidor
+// Get single user
+app.get('/api/users/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const user = await prisma.user.findUnique({
+            where: { id: parseInt(id) },
+            select: {
+                id: true,
+                username: true,
+                name: true,
+                carnetNumber: true,
+                career: true,
+                schedule: true,
+                role: true,
+                profileImage: true,
+                lastLogin: true
+            }
+        });
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+        res.json(user);
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        res.status(500).json({ message: 'Error al obtener usuario' });
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Servidor ejecutándose en el puerto ${PORT}`);

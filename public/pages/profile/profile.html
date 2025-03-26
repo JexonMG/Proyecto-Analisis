@@ -3,97 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfil de Usuario</title>
+    <title>Mi Perfil</title>
     <link rel="stylesheet" href="profile.css">
-
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#007bff">
+    <link rel="apple-touch-icon" href="icons/apple-icon-180x180.png">
 </head>
 <body>
-    <div class="user-panel">
-        <header>
-            <h1>Mi Perfil</h1>
-            <button onclick="logout()" class="btn-logout">Cerrar Sesión</button>
-        </header>
-        
-        <div class="profile-section">
-            <div class="profile-image-container">
-                <img src="../../uploads/default-profile.png" alt="Foto de perfil" class="profile-image" id="profileImage">
-                <div class="image-upload">
-                    <label for="profileImageInput">Cambiar foto</label>
-                    <input type="file" id="profileImageInput" accept="image/*" onchange="handleImageUpload(event)" style="display: none;">
+    <div class="container">
+        <div class="user-panel">
+            <header>
+                <h1>Mi Perfil</h1>
+                <button id="logoutBtn" class="btn-logout">Cerrar Sesión</button>
+            </header>
+            
+            <div class="profile-section">
+                <div class="profile-image-container">
+                    <img src="images/default-profile.webp" alt="Foto de perfil" class="profile-image" id="profileImage">
+                    <div class="image-upload">
+                        <input type="file" id="profileImageInput" accept="image/*" class="file-input">
+                        <label for="profileImageInput" class="file-label">
+                            <i class="icon-camera"></i> Cambiar foto
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="profile-info">
+                    <h2 id="userName">Juan Pérez</h2>
+                    <p class="email">Email: <span id="userEmail">juan.perez@ejemplo.com</span></p>
                 </div>
             </div>
-            
-            <div class="profile-info">
-                <h2 id="userName"></h2>
-                <p>Email: <span id="userEmail"></span></p>
+
+            <div class="qr-section">
+                <h3>Control de Entrada/Salida</h3>
+                <button id="qrScanBtn" class="btn-qr">
+                    <i class="icon-qr"></i> Escanear QR
+                </button>
+                <div id="qrCode"></div>
             </div>
-        </div>
 
-        <div class="qr-section">
-            <h3>Control de Entrada/Salida</h3>
-            <button onclick="showQRScanner()" class="btn-qr">Escanear QR</button>
-            <div id="qrCode"></div>
-        </div>
-
-        <div id="qrScanner" class="qr-scanner-modal" style="display: none;">
-            <div class="modal-content">
-                <span class="close-modal" onclick="closeQRScanner()">&times;</span>
-                <h3>Escanear Código QR</h3>
-                <div id="reader"></div>
-                <div id="scanResult"></div>
+            <div id="qrScanner" class="modal qr-scanner-modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Escanear Código QR</h3>
+                        <button id="closeQrScanner" class="close-modal">&times;</button>
+                    </div>
+                    <div id="reader" class="qr-reader"></div>
+                    <div id="scanResult" class="scan-result"></div>
+                </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.2.1/html5-qrcode.min.js"></script>
+    <script src="qr.js"></script>
     <script src="profile.js"></script>
-    <script>
-        function handleImageUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                uploadProfileImage(file);
-            }
-        }
-
-        function showQRScanner() {
-            document.getElementById('qrScanner').style.display = 'block';
-            initializeQRScanner();
-        }
-
-        function closeQRScanner() {
-            document.getElementById('qrScanner').style.display = 'none';
-            if (html5QrCode) {
-                html5QrCode.stop();
-            }
-        }
-
-        let html5QrCode;
-
-        function initializeQRScanner() {
-            html5QrCode = new Html5Qrcode("reader");
-            const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-
-            html5QrCode.start(
-                { facingMode: "environment" },
-                config,
-                qrCodeSuccessCallback,
-                qrCodeErrorCallback
-            );
-        }
-
-        function qrCodeSuccessCallback(decodedText) {
-            document.getElementById('scanResult').innerHTML = `
-                <p>QR escaneado exitosamente!</p>
-                <p>Hora: ${new Date().toLocaleTimeString()}</p>
-            `;
-            // Aquí puedes agregar la lógica para registrar la entrada/salida
-            setTimeout(closeQRScanner, 2000);
-        }
-
-        function qrCodeErrorCallback(error) {
-            // console.error("Error al escanear QR:", error);
-        }
-    </script>
+    <script src="imageupload.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.2.1/html5-qrcode.min.js"></script>
 </body>
 </html>

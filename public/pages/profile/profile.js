@@ -18,3 +18,27 @@ function initializePage() {
     }
     generateQRCode();
 }
+
+
+function setupLogoutButton() {
+    const logoutBtn = document.getElementById('logoutBtn');
+    
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            // Clear user data from localStorage
+            localStorage.removeItem('user');
+            
+            // Optionally, you can clear other related localStorage items
+            // localStorage.removeItem('token');
+            
+            // Redirect to login page
+            window.location.href = '/index.html';
+        });
+    }
+}
+
+// Call this function when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    setupLogoutButton();
+    initializePage();
+});
