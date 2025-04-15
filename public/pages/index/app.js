@@ -1,5 +1,3 @@
-
-
 document.addEventListener('DOMContentLoaded', function() {
     // Elementos del DOM
     const loginFormContainer = document.getElementById('loginFormContainer');
@@ -69,14 +67,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         try {
-            // Crear objeto de usuario
+            // Crear objeto de usuario con horas inicializadas en 0
             const userData = {
-                username: carnetNumber, // Usamos el carnet como username
+                username: fullName, // Usamos el carnet como username
                 password: password,
-                name: fullName,
                 carnetNumber: carnetNumber,
                 career: career,
                 schedule: schedule,
+                hours: 0, // Inicializamos horas en 0
                 profileImage: profileImage,
                 lastLogin: new Date().toISOString()
             };
@@ -120,8 +118,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
-        
-        if (!username || !password) {
+        const carnet = username
+        if (!carnet || !password) {
             return showLoginError('Por favor ingrese su carnet y contraseña');
         }
         
@@ -131,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ username, password })
+                body: JSON.stringify({ carnetNumber: username, password })
             });
             
             const data = await response.json();
@@ -143,9 +141,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // Login exitoso - guardar datos de usuario
             localStorage.setItem('user', JSON.stringify(data));
             
-            // Redirigir o mostrar mensaje de éxito
-            alert(`Bienvenido ${data.name || data.username}!`);
-            // window.location.href = '/dashboard.html'; // Redirigir al dashboard
+            // Mensaje de éxito y redirección a la página de perfil
+            alert(`Bienvenido ${data.name || data.carnet}!`);
+            window.location.href = '/pages/profile/profile.html'; // Redirección modificada aquí
             
         } catch (error) {
             console.error('Error en login:', error);
@@ -166,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function checkLoggedIn() {
         const user = localStorage.getItem('user');
         if (user) {
-            // window.location.href = '/dashboard.html';
+            window.location.href = '/pages/profile/profile.html'; // También actualizado aquí
         }
     }
     

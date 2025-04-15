@@ -3,63 +3,262 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Perfil</title>
-    <link rel="stylesheet" href="profile.css">
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#007bff">
-    <link rel="apple-touch-icon" href="icons/apple-icon-180x180.png">
+    <title>Perfil de Usuario</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        /* Bloque verde superior */
+        .top-green-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5vh;
+            background-color: #00BD0D;
+            z-index: 1000;
+        }
+
+        /* Container Styles */
+        .container {
+            background: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .user-icon {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+            margin: 0 auto 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Heading Styles */
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        /* Profile Image Container */
+        .profile-image-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 auto 20px;
+            width: 100%;
+        }
+
+        .profile-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px solid #00BD0D;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .profile-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Full Name Field */
+        .user-name {
+            background-color: #00BD0D;
+            color: white;
+            border-radius: 15px 15px 0 0;
+            padding: 12px 15px;
+            border: none;
+            width: 100%;
+            font-size: 16px;
+            box-sizing: border-box;
+            margin-bottom: 0;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* Form Table Styles - Sin espacios */
+        .info-table-container {
+            width: 100%;
+            margin: 0;
+        }
+
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0;
+            padding: 0;
+        }
+
+        .info-table tr {
+            margin: 0;
+            padding: 0;
+        }
+
+        .info-table td {
+            padding: 0;
+            vertical-align: top;
+        }
+
+        /* Labels e Inputs pegados */
+        .info-table .label {
+            display: block;
+            font-weight: 600;
+            padding: 12px 15px;
+            margin: 0;
+            border-radius: 0;
+            border: none;
+            box-sizing: border-box;
+        }
+
+        .info-table .value {
+            width: 100%;
+            padding: 12px 15px;
+            margin: 0;
+            border: 1px solid #ccc;
+            border-radius: 0;
+            border-top: none;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        /* Bordes redondeados solo donde se necesitan */
+        .info-table tr:last-child td:last-child .value {
+            border-radius: 0 0 15px 0;
+        }
+
+        /* Colores alternados para filas */
+        .info-table tr:nth-child(odd) .label {
+            background-color: #ECECEC;
+            color: black;
+        }
+
+        .info-table tr:nth-child(odd) .value {
+            background-color: #ECECEC;
+        }
+
+        .info-table tr:nth-child(even) .label {
+            background-color: #E3E3E3;
+            color: black;
+        }
+
+        .info-table tr:nth-child(even) .value {
+            background-color: #E3E3E3;
+        }
+
+        /* Botones */
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        button {
+            background-color: #00BD0D;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            width: 45%;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.2s;
+            display: block;
+        }
+
+        button:hover {
+            background-color: #018a13;
+            transform: translateY(-1px);
+        }
+
+        .btn-logout {
+            background-color: #fc0800;
+        }
+
+        .btn-logout:hover {
+            background-color: #d10600;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 500px) {
+            .container {
+                padding: 15px;
+                margin: 10px;
+                max-width: none;
+            }
+            
+            .info-table .label,
+            .info-table .value {
+                padding: 10px 12px;
+                font-size: 14px;
+            }
+        }
+
+        /* Mobile Touch Improvements */
+        html, body {
+            touch-action: manipulation;
+            overscroll-behavior-y: none;
+        }
+    </style>
 </head>
 <body>
+    <div class="top-green-bar"></div>
     <div class="container">
-        <div class="user-panel">
-            <header>
-                <h1>Mi Perfil</h1>
-                <button id="logoutBtn" class="btn-logout">Cerrar Sesión</button>
-            </header>
+        <div class="profile-container">
+            <h2>Perfil de Usuario</h2>
+            <div class="profile-image-container">
+                <div class="profile-image">
+                    <img src="https://cdn-icons-png.flaticon.com/512/6522/6522581.png" alt="Foto de perfil" id="profilePhoto">
+                </div>
+            </div>
             
-            <div class="profile-section">
-                <div class="profile-image-container">
-                    <img src="images/default-profile.webp" alt="Foto de perfil" class="profile-image" id="profileImage">
-                    <div class="image-upload">
-                        <input type="file" id="profileImageInput" accept="image/*" class="file-input">
-                        <label for="profileImageInput" class="file-label">
-                            <i class="icon-camera"></i> Cambiar foto
-                        </label>
-                    </div>
-                </div>
-                
-                <div class="profile-info">
-                    <h2 id="userName">Juan Pérez</h2>
-                    <p class="email">Email: <span id="userEmail">juan.perez@ejemplo.com</span></p>
-                </div>
+            <div class="user-name" id="userName">Juan Pérez</div>
+            
+            <div class="info-table-container">
+                <table class="info-table">
+                    <tr>
+                        <td><div class="label">Número de Carnet:</div></td>
+                        <td><div class="value" id="userCarnet">12345</div></td>
+                    </tr>
+                    <tr>
+                        <td><div class="label">Carrera:</div></td>
+                        <td><div class="value" id="userCareer">Ingeniería en Sistemas</div></td>
+                    </tr>
+                    <tr>
+                        <td><div class="label">Jornada:</div></td>
+                        <td><div class="value" id="userSchedule">Matutina</div></td>
+                    </tr>
+                </table>
             </div>
-
-            <div class="qr-section">
-                <h3>Control de Entrada/Salida</h3>
-                <button id="qrScanBtn" class="btn-qr">
-                    <i class="icon-qr"></i> Escanear QR
-                </button>
-                <div id="qrCode"></div>
-            </div>
-
-            <div id="qrScanner" class="modal qr-scanner-modal">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3>Escanear Código QR</h3>
-                        <button id="closeQrScanner" class="close-modal">&times;</button>
-                    </div>
-                    <div id="reader" class="qr-reader"></div>
-                    <div id="scanResult" class="scan-result"></div>
-                </div>
+            
+            <div class="btn-container">
+                <button type="button" id="btnEdit" class="btn-edit">Editar</button>
+                <button type="button" id="btnLogout" class="btn-logout">Cerrar Sesión</button>
             </div>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.2.1/html5-qrcode.min.js"></script>
-    <script src="qr.js"></script>
     <script src="profile.js"></script>
-    <script src="imageupload.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.2.1/html5-qrcode.min.js"></script>
 </body>
 </html>
