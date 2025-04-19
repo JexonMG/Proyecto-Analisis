@@ -12,10 +12,10 @@ app.use(express.urlencoded({ extended: true }));
 
 // Login route
 app.post('/api/login', async (req, res) => {
-    const { username, password } = req.body;
-
+    const { carnet, password } = req.body;
+    console.log('Login attempt:', { carnet, password });
     try {
-        const user = await prisma.user.findUnique({ where: { username } });
+        const user = await prisma.user.findUnique({ where: { carnetNumber:carnet } });
         if (!user) {
             return res.status(401).json({ message: 'Usuario no encontrado' });
         }
@@ -35,7 +35,6 @@ app.post('/api/login', async (req, res) => {
             id: user.id,
             role: user.role,
             username: user.username,
-            name: user.name,
             carnetNumber: user.carnetNumber,
             career: user.career,
             schedule: user.schedule,
@@ -49,7 +48,7 @@ app.post('/api/login', async (req, res) => {
 
 // User creation route
 app.post('/api/users', async (req, res) => {
-    const { username, password, carnetNumber, career, schedule, profileImage } = req.body;
+    const { username, password, carnetNumber, career, schedule, profileImage, lastLogin } = req.body;
     const role = req.body.role || 'user'; // Default role
 
     try {
@@ -67,7 +66,7 @@ app.post('/api/users', async (req, res) => {
                 career: career || "",
                 schedule: schedule || "",
                 profileImage,
-                lastLogin: null
+                lastLogin
             }
         });
 
@@ -152,12 +151,11 @@ app.get('/api/users', async (req, res) => {
             select: {
                 id: true,
                 username: true,
-                name: true,
+                password: true,
                 carnetNumber: true,
                 career: true,
                 schedule: true,
                 role: true,
-                profileImage: true,
                 lastLogin: true
             }
         });

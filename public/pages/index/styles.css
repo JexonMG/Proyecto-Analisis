@@ -384,6 +384,11 @@ button:hover {
     }
 }
 
+input[type="file"] {
+    display: none;
+}
+
+
 /* Mobile Touch Improvements */
 html, body {
     touch-action: manipulation;

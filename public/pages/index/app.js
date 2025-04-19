@@ -71,9 +71,8 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             // Crear objeto de usuario
             const userData = {
-                username: carnetNumber, // Usamos el carnet como username
+                username: fullName, // Usamos el carnet como username
                 password: password,
-                name: fullName,
                 carnetNumber: carnetNumber,
                 career: career,
                 schedule: schedule,
@@ -118,10 +117,10 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         errorMessage.textContent = '';
         
-        const username = document.getElementById('username').value;
+        const carnet = document.getElementById('carnet').value;
         const password = document.getElementById('password').value;
         
-        if (!username || !password) {
+        if (!carnet || !password) {
             return showLoginError('Por favor ingrese su carnet y contraseña');
         }
         
@@ -131,7 +130,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ username, password })
+                body: JSON.stringify({ carnet, password })
             });
             
             const data = await response.json();
@@ -144,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem('user', JSON.stringify(data));
             
             // Redirigir o mostrar mensaje de éxito
-            alert(`Bienvenido ${data.name || data.username}!`);
+            alert(`Bienvenido ${data.name || data.carnet}!`);
             // window.location.href = '/dashboard.html'; // Redirigir al dashboard
             
         } catch (error) {
