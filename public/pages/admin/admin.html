@@ -4,277 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Administración</title>
-    <style>
-        /* Global Styles */
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f2f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        /* Bloque verde superior */
-        .top-green-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5vh;
-            background-color: #00BD0D;
-            z-index: 1000;
-        }
-
-        /* Container Styles */
-        .container {
-            background: white;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            width: 100%;
-            max-width: 400px;
-            margin-top: 5vh; /* Para evitar solapamiento con la barra verde */
-        }
-
-        .user-icon {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            object-fit: cover;
-            display: block;
-            margin: 0 auto 20px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Heading Styles */
-        h2 {
-            text-align: center;
-            margin-bottom: 25px;
-            font-size: 24px;
-            color: #333;
-        }
-
-        /* Form Group Styles */
-        .form-group {
-            margin-bottom: 15px;
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-        }
-
-        label {
-            display: block;
-            font-weight: 600;
-            color: white;
-            background-color: #00BD0D;
-            padding: 12px 15px;
-            border-radius: 15px 15px 0 0;
-            width: 100%;
-            text-align: left;
-            box-sizing: border-box;
-            margin-bottom: 0;
-        }
-
-        input[type="text"],
-        input[type="password"] {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #ccc;
-            border-radius: 0 0 15px 15px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-            box-sizing: border-box;
-            background-color: #f1f1f1;
-            color: #333;
-            margin-top: 0;
-            border-top: none;
-        }
-
-        input::placeholder {
-            color: #888;
-        }
-
-        input:focus {
-            border-color: #007bff;
-            outline: none;
-        }
-
-        /* Button Styles */
-        .btn-admin {
-            background-color: #00BD0D;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 15px;
-            cursor: pointer;
-            width: 50%;
-            font-size: 16px;
-            font-weight: bold;
-            transition: background-color 0.3s, transform 0.2s;
-            margin: 10px auto;
-            display: block;
-        }
-
-        .btn-admin:hover {
-            background-color: #018a13;
-            transform: translateY(-1px);
-        }
-
-        .btn-admin.delete {
-            background-color: #fc0800;
-        }
-
-        .btn-admin.delete:hover {
-            background-color: #d80700;
-        }
-
-        /* Sede Control Styles */
-        .sede-control {
-            display: flex;
-            margin-bottom: 20px;
-            flex-direction: column;
-        }
-
-        .sede-control label {
-            border-radius: 15px 15px 0 0;
-        }
-
-        .sede-control div {
-            display: flex;
-            width: 100%;
-        }
-
-        .sede-control input {
-            flex: 1;
-            border-radius: 0 0 0 15px;
-            border-right: none;
-        }
-
-        .sede-control button {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 12px 15px;
-            border-radius: 0 0 15px 0;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            font-weight: bold;
-            width: auto;
-            min-width: 100px;
-        }
-
-        .sede-control button:hover {
-            background-color: #2980b9;
-        }
-
-        /* Logout Button */
-        .logout-btn {
-            background-color: #fc0800;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 15px;
-            cursor: pointer;
-            width: 50%;
-            font-size: 16px;
-            font-weight: bold;
-            transition: background-color 0.3s, transform 0.2s;
-            margin: 10px auto;
-            display: block;
-        }
-
-        .logout-btn:hover {
-            background-color: #d80700;
-            transform: translateY(-1px);
-        }
-
-        /* Admin Actions */
-        .admin-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        /* Responsive Styles */
-        @media (max-width: 500px) {
-            .container {
-                padding: 15px;
-                margin: 10px;
-                max-width: none;
-            }
-            
-            .btn-admin, .logout-btn {
-                width: 70%;
-            }
-        }
-
-        /* Mobile Touch Improvements */
-        html, body {
-            touch-action: manipulation;
-            overscroll-behavior-y: none;
-        }
-    </style>
+    <link rel="stylesheet" href="admin.css">
 </head>
 <body>
     <div class="top-green-bar"></div>
     <div class="container">
         <img src="https://cdn-icons-png.flaticon.com/512/6522/6522581.png" alt="Admin" class="user-icon">
         <h2>Panel de Administración</h2>
-        
-        <div class="sede-control">
-            <label for="sedeInput">Sede:</label>
-            <div>
-                <input type="text" id="sedeInput" placeholder="Ingrese la sede...">
-                <button id="confirmSede">Confirmar</button>
-            </div>
-        </div>
-        
+
         <div class="admin-actions">
-            <button class="btn-admin" id="addUserBtn">Añadir Usuario</button>
-            <button class="btn-admin delete" id="deleteUserBtn">Eliminar Usuario</button>
-        </div>
+            <button class="btn-admin" id="scanQrBtn">📷 Escanear QR</button>
+            <button class="btn-admin" id="addUserBtn">➕ Añadir Usuario</button>
+            <button class="btn-admin delete" id="deleteUserBtn">❌ Eliminar Usuario</button>
+          </div>
+          
         
         <button class="logout-btn" id="logoutBtn">Cerrar Sesión</button>
     </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Elementos del DOM
-            const addUserBtn = document.getElementById('addUserBtn');
-            const deleteUserBtn = document.getElementById('deleteUserBtn');
-            const confirmSedeBtn = document.getElementById('confirmSede');
-            const sedeInput = document.getElementById('sedeInput');
-            const logoutBtn = document.getElementById('logoutBtn');
-            
-            // Event listeners
-            addUserBtn.addEventListener('click', function() {
-                window.location.href = '/pages/adminSearch/search.html'; // Redirección modificada aquí
-                // Aquí podrías redirigir a otra página o mostrar un formulario modal
-            });
-            
-            deleteUserBtn.addEventListener('click', function() {
-                alert('Función para eliminar usuario');
-                // Aquí podrías redirigir a otra página o mostrar un formulario modal
-            });
-            
-            confirmSedeBtn.addEventListener('click', function() {
-                if (sedeInput.value.trim() === '') {
-                    alert('Por favor ingrese una sede');
-                    return;
-                }
-                alert(`Sede "${sedeInput.value}" confirmada`);
-                // Aquí podrías guardar la sede o realizar alguna acción
-            });
-            
-            logoutBtn.addEventListener('click', function() {
-                if (confirm('¿Está seguro que desea cerrar sesión?')) {
-                    // Redirigir al login
-                    window.location.href = 'login.html';
-                }
-            });
-        });
-    </script>
+    <div class="qr-scanner-modal" id="qrScannerModal">
+        <div class="qr-scanner-content">
+            <video id="qr-video"></video>
+            <p class="scanner-instructions">Escaneando código QR...</p>
+            <button class="btn-admin delete" id="cancelScan">Cancelar</button>
+        </div>
+    </div>
+    
+    <!-- User Popup -->
+    <div class="user-popup" id="userPopup">
+        <div class="user-popup-content" id="userPopupContent">
+            <!-- El contenido se llenará dinámicamente -->
+        </div>
+    </div>
+    
+    <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+    <script src="admin.js"></script>
 </body>
 </html>

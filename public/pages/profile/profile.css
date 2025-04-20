@@ -138,3 +138,230 @@ header {
 #reader {
     margin-top: 10px;
 }
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Bloque verde superior */
+.top-green-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5vh;
+    background-color: #00BD0D;
+    z-index: 1000;
+}
+
+/* Container Styles */
+.container {
+    background: white;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    width: 100%;
+    max-width: 400px;
+}
+
+.user-icon {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Heading Styles */
+h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 24px;
+    color: #333;
+}
+
+/* Profile Image Container */
+.profile-image-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto 20px;
+    width: 100%;
+}
+
+.profile-image {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 3px solid #00BD0D;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.profile-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Mantener todos los estilos anteriores y agregar estos */
+.profile-image.qr-active {
+    border-color: #007bff;
+}
+
+.profile-image.qr-active .change-photo-text {
+    display: block;
+    background-color: rgba(0, 123, 255, 0.6);
+    content: "Ver Foto";
+}
+
+/* Full Name Field */
+.user-name {
+    background-color: #00BD0D;
+    color: white;
+    border-radius: 15px 15px 0 0;
+    padding: 12px 15px;
+    border: none;
+    width: 100%;
+    font-size: 16px;
+    box-sizing: border-box;
+    margin-bottom: 0;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Form Table Styles - Sin espacios */
+.info-table-container {
+    width: 100%;
+    margin: 0;
+}
+
+.info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+    padding: 0;
+}
+
+.info-table tr {
+    margin: 0;
+    padding: 0;
+}
+
+.info-table td {
+    padding: 0;
+    vertical-align: top;
+}
+
+/* Labels e Inputs pegados */
+.info-table .label {
+    display: block;
+    font-weight: 600;
+    padding: 12px 15px;
+    margin: 0;
+    border-radius: 0;
+    border: none;
+    box-sizing: border-box;
+}
+
+.info-table .value {
+    width: 100%;
+    padding: 12px 15px;
+    margin: 0;
+    border: 1px solid #ccc;
+    border-radius: 0;
+    border-top: none;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+/* Bordes redondeados solo donde se necesitan */
+.info-table tr:last-child td:last-child .value {
+    border-radius: 0 0 15px 0;
+}
+
+/* Colores alternados para filas */
+.info-table tr:nth-child(odd) .label {
+    background-color: #ECECEC;
+    color: black;
+}
+
+.info-table tr:nth-child(odd) .value {
+    background-color: #ECECEC;
+}
+
+.info-table tr:nth-child(even) .label {
+    background-color: #E3E3E3;
+    color: black;
+}
+
+.info-table tr:nth-child(even) .value {
+    background-color: #E3E3E3;
+}
+
+/* Botones */
+.btn-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+button {
+    background-color: #00BD0D;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 15px;
+    cursor: pointer;
+    width: 45%;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.2s;
+    display: block;
+}
+
+button:hover {
+    background-color: #018a13;
+    transform: translateY(-1px);
+}
+
+.btn-logout {
+    background-color: #fc0800;
+}
+
+.btn-logout:hover {
+    background-color: #d10600;
+}
+
+/* Responsive Styles */
+@media (max-width: 500px) {
+    .container {
+        padding: 15px;
+        margin: 10px;
+        max-width: none;
+    }
+    
+    .info-table .label,
+    .info-table .value {
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+}
+
+/* Mobile Touch Improvements */
+html, body {
+    touch-action: manipulation;
+    overscroll-behavior-y: none;
+}
