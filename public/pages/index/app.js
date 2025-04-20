@@ -1,5 +1,3 @@
-
-
 document.addEventListener('DOMContentLoaded', function() {
     // Elementos del DOM
     const loginFormContainer = document.getElementById('loginFormContainer');
@@ -60,24 +58,29 @@ document.addEventListener('DOMContentLoaded', function() {
         const carnetNumber = document.getElementById('carnetNumber').value;
         const career = document.getElementById('career').value;
         const schedule = document.getElementById('schedule').value;
+        const areaTrabajo = document.getElementById('areaTrabajo').value; // Nuevo campo
         const password = document.getElementById('passwordRegister').value;
         const profileImage = profileImagePreview.querySelector('img')?.src || '';
         
         // Validación básica
-        if (!fullName || !carnetNumber || !password) {
+        if (!fullName || !carnetNumber || !password || !areaTrabajo) {
             return showRegisterError('Por favor complete todos los campos requeridos');
         }
         
         try {
-            // Crear objeto de usuario
+            // Crear objeto de usuario con horas inicializadas en 0
             const userData = {
-                username: fullName, // Usamos el carnet como username
+                username: fullName, // Usamos el nombre como username
                 password: password,
                 carnetNumber: carnetNumber,
                 career: career,
                 schedule: schedule,
+                areaTrabajo: areaTrabajo, // Nuevo campo
+                hours: 0, // Inicializamos horas en 0
                 profileImage: profileImage,
-                lastLogin: new Date().toISOString()
+                lastLogin: new Date().toISOString(),
+                role: "user", // Asignando un rol por defecto
+                tutor: "" // Campo tutor vacío por defecto
             };
             
             // Enviar al servidor
@@ -119,7 +122,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const carnet = document.getElementById('carnet').value;
         const password = document.getElementById('password').value;
-        
         if (!carnet || !password) {
             return showLoginError('Por favor ingrese su carnet y contraseña');
         }
@@ -130,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ carnet, password })
+                body: JSON.stringify({ carnetNumber: carnet, password }) // Corregido: era username, ahora es carnet
             });
             
             const data = await response.json();
@@ -142,9 +144,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // Login exitoso - guardar datos de usuario
             localStorage.setItem('user', JSON.stringify(data));
             
-            // Redirigir o mostrar mensaje de éxito
-            alert(`Bienvenido ${data.name || data.carnet}!`);
-            // window.location.href = '/dashboard.html'; // Redirigir al dashboard
+            // Mensaje de éxito y redirección a la página de perfil
+            alert(`Bienvenido ${data.username || data.carnetNumber}!`);
+            window.location.href = '/pages/profile/profile.html';
             
         } catch (error) {
             console.error('Error en login:', error);
@@ -165,7 +167,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function checkLoggedIn() {
         const user = localStorage.getItem('user');
         if (user) {
-            // window.location.href = '/dashboard.html';
+            window.location.href = '/pages/profile/profile.html';
         }
     }
     

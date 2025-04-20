@@ -18,6 +18,11 @@ app.get('/pages/admin/admin.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'pages', 'admin', 'admin.html'));
 });
 
+app.get('/pages/adminSearch/search.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'pages', 'adminSearch', 'search.html'));
+});
+
+
 app.get('*', (req, res) => {
     res.redirect('/pages/index/index.html');
 });
