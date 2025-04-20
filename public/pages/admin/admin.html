@@ -19,24 +19,41 @@
           </div>
           
         
-        <button class="logout-btn" id="logoutBtn">Cerrar Sesión</button>
+        <button class="btnLogout" id="btnLogout">Cerrar Sesión</button>
     </div>
-    <div class="qr-scanner-modal" id="qrScannerModal">
-        <div class="qr-scanner-content">
-            <video id="qr-video"></video>
-            <p class="scanner-instructions">Escaneando código QR...</p>
-            <button class="btn-admin delete" id="cancelScan">Cancelar</button>
+
+<!-- Modal del escáner QR (se mantiene el resto del HTML original) -->
+<div id="qrScannerModal" class="modal">
+    <div class="modal-content">
+        <h2>Escanear Código QR</h2>
+        <div id="reader"></div>
+        <p class="scan-instructions">Apunte la cámara al código QR del carnet de voluntario</p>
+        <button id="cancelScan" class="btn-cancel">Cancelar Escaneo</button>
+    </div>
+</div>
+
+<!-- Modal para mostrar información del usuario -->
+<div id="userPopup" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Información del Voluntario</h5>
+                <button type="button" class="close-btn" id="closePopup">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="userPopupContent">
+                    <!-- Contenido generado dinámicamente -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancelAction">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="confirmAddHours">Añadir Horas</button>
+            </div>
         </div>
     </div>
+</div>
     
-    <!-- User Popup -->
-    <div class="user-popup" id="userPopup">
-        <div class="user-popup-content" id="userPopupContent">
-            <!-- El contenido se llenará dinámicamente -->
-        </div>
-    </div>
-    
-    <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <script src="admin.js"></script>
 </body>
 </html>

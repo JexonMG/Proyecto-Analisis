@@ -8,6 +8,13 @@
             height: 100vh;
             margin: 0;
         }
+        
+        #qr-video {
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+            border-radius: 10px;
+        }
 
         /* Bloque verde superior */
         .top-green-bar {
@@ -123,7 +130,7 @@
         }
 
         /* Logout Button */
-        .logout-btn {
+        .btnLogout {
             background-color: #fc0800;
             color: white;
             border: none;
@@ -138,7 +145,7 @@
             display: block;
         }
 
-        .logout-btn:hover {
+        .btnLogout:hover {
             background-color: #d80700;
             transform: translateY(-1px);
         }
@@ -151,125 +158,368 @@
             margin-bottom: 20px;
         }
 
-        .qr-scanner-modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.9);
-        z-index: 2000;
-        justify-content: center;
-        align-items: center;
-    }
+/* Modal del escáner QR (se mantiene el resto del CSS original) */
+#qrScannerModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
 
-    .qr-scanner-content {
-        background: white;
-        padding: 20px;
-        border-radius: 15px;
-        width: 90%;
-        max-width: 500px;
-        text-align: center;
-    }
+#qrScannerModal .modal-content {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    position: relative;
+    animation: modalFadeIn 0.3s ease-out;
+}
 
-    #qr-video {
-        width: 100%;
-        border-radius: 10px;
-        margin: 15px 0;
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
     }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
-    .scanner-instructions {
-        color: white;
-        margin-top: 15px;
-        font-size: 1.1em;
-    }
+#qrScannerModal h2 {
+    margin-top: 0;
+    color: #333;
+    text-align: center;
+}
 
-    /* User Popup */
-    .user-popup {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.8);
-        z-index: 2000;
-        justify-content: center;
-        align-items: center;
-    }
+#reader {
+    width: 100%;
+    min-height: 300px;
+    background: #f0f0f0;
+    margin: 15px 0;
+    border-radius: 10px;
+    overflow: hidden;
+}
 
-    .user-popup-content {
-        background: white;
-        padding: 25px;
-        border-radius: 15px;
-        width: 90%;
-        max-width: 400px;
-        position: relative;
-    }
+#cancelScan {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #fc0800;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 15px;
+    transition: background-color 0.3s;
+}
 
-    .user-popup-header {
-        display: flex;
-        align-items: center;
-        margin-bottom: 20px;
-    }
+#cancelScan:hover {
+    background-color: #d80700;
+}
 
-    .user-avatar {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        margin-right: 15px;
-    }
+.scan-instructions {
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+    margin-top: 10px;
+}
 
-    .user-info h3 {
-        margin: 0;
-        color: #333;
-    }
+/* Estilos para el modal de usuario */
+#userPopup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1050;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
 
-    .detail-item {
-        margin: 10px 0;
-        display: flex;
-        justify-content: space-between;
-    }
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
 
-    .detail-label {
-        font-weight: 600;
-        color: #555;
-    }
+.modal-dialog {
+    max-width: 500px;
+    width: 90%;
+    margin: 1.75rem auto;
+}
 
-    .detail-value {
-        color: #333;
-    }
+.modal-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    outline: 0;
+}
 
-    .hours-control {
-        margin-top: 20px;
-        text-align: center;
-    }
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    border-bottom: 1px solid #e9ecef;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+    background-color: #00BD0D;
+    color: white;
+}
 
-    .hours-adjuster {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 15px 0;
-    }
+.modal-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
 
-    .hours-btn {
-        background-color: #00BD0D;
-        color: white;
-        border: none;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        font-size: 1.2em;
-        cursor: pointer;
-        margin: 0 10px;
-    }
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
 
-    .hours-display {
-        font-size: 1.5em;
-        min-width: 50px;
-        text-align: center;
-    }
+.close-btn:hover {
+    opacity: 1;
+}
+
+.modal-body {
+    position: relative;
+    flex: 1 1 auto;
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 1rem;
+    border-top: 1px solid #e9ecef;
+    border-bottom-right-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
+}
+
+.btn {
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    user-select: none;
+    border: 1px solid transparent;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 0.3rem;
+    transition: all 0.15s ease-in-out;
+    cursor: pointer;
+    margin-left: 0.5rem;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #00BD0D;
+    border-color: #00BD0D;
+}
+
+.btn-primary:hover {
+    background-color: #018a13;
+    border-color: #018a13;
+}
+
+.btn-secondary {
+    color: #333;
+    background-color: #f8f9fa;
+    border-color: #ddd;
+}
+
+.btn-secondary:hover {
+    background-color: #e2e6ea;
+    border-color: #dae0e5;
+}
+
+/* Estilos para el contenido dinámico */
+.user-info-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.user-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 1.5rem;
+    border: 3px solid #00BD0D;
+}
+
+.user-details {
+    flex: 1;
+}
+
+.user-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: #333;
+}
+
+.user-role {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #fff;
+    background-color: #00BD0D;
+    border-radius: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: #666;
+}
+
+.detail-value {
+    color: #333;
+}
+
+.hours-control {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.hours-adjuster {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 1rem 0;
+}
+
+.hours-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #00BD0D;
+    color: white;
+    border: none;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.hours-btn:hover {
+    background-color: #018a13;
+}
+
+.hours-display {
+    min-width: 50px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0 1rem;
+}
+
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.delete-popup {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+}
+
+.delete-popup h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.delete-popup input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.popup-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.btn-delete {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-cancel {
+    background-color: #ccc;
+    color: #333;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-delete:hover {
+    background-color: #d32f2f;
+}
+
+.btn-cancel:hover {
+    background-color: #bbb;
+}
 
         /* Responsive Styles */
         @media (max-width: 500px) {
@@ -279,7 +529,7 @@
                 max-width: none;
             }
             
-            .btn-admin, .logout-btn {
+            .btn-admin, .btnLogout {
                 width: 70%;
             }
         }

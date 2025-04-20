@@ -4,8 +4,6 @@ const { PrismaClient } = require('@prisma/client');
 const cors = require('cors');
 const http = require('http');
 
-
-
 const app = express();
 const prisma = new PrismaClient();
 
@@ -15,13 +13,13 @@ app.use(express.urlencoded({ extended: true }));
 
 const server = http.createServer({
     maxHeaderSize: 16384  // Increase to 16KB (default is often 8KB)
-  }, app);
+}, app);
 
 app.use(cors({
   origin: 'http://localhost:5000', // Your frontend origin
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization']
-  }));
+}));
 
 // Login route
 app.post('/api/login', async (req, res) => {
@@ -254,7 +252,6 @@ app.get('/api/users/search', async (req, res) => {
     }
 });
 
-
 // Get single user
 app.get('/api/users/:id', async (req, res) => {
     const { id } = req.params;
@@ -282,6 +279,106 @@ app.get('/api/users/:id', async (req, res) => {
         res.json(user);
     } catch (error) {
         console.error('Error fetching user:', error);
+        res.status(500).json({ message: 'Error en el servidor' });
+    }
+});
+
+// Nuevo endpoint: Buscar usuario por número de carnet
+app.get('/api/users/carnet/:carnet', async (req, res) => {
+    const { carnet } = req.params;
+    try {
+        const user = await prisma.user.findUnique({
+            where: { carnetNumber: carnet },
+            select: {
+                id: true,
+                username: true,
+                carnetNumber: true,
+                career: true,
+                schedule: true,
+                hours: true,
+                role: true,
+                lastLogin: true,
+                tutor: true,
+                areaTrabajo: true,
+                profileImage: true
+            }
+        });
+        
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+        
+        res.json(user);
+    } catch (error) {
+        console.error('Error buscando usuario por carnet:', error);
+        res.status(500).json({ message: 'Error en el servidor' });
+    }
+});
+
+// Nuevo endpoint: Actualizar horas de un usuario por número de carnet
+app.patch('/api/users/carnet/:carnet', async (req, res) => {
+    const { carnet } = req.params;
+    const { hoursToAdd } = req.body;
+    
+    try {
+        // Primero encontrar el usuario
+        const user = await prisma.user.findUnique({
+            where: { carnetNumber: carnet }
+        });
+        
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+        
+        // Calcular las nuevas horas
+        const currentHours = user.hours || 0;
+        const newHours = currentHours + parseInt(hoursToAdd);
+        
+        // Actualizar el usuario
+        const updatedUser = await prisma.user.update({
+            where: { carnetNumber: carnet },
+            data: { hours: newHours },
+            select: {
+                id: true,
+                username: true,
+                carnetNumber: true,
+                career: true,
+                schedule: true,
+                hours: true,
+                role: true,
+                lastLogin: true,
+                tutor: true,
+                areaTrabajo: true,
+                profileImage: true
+            }
+        });
+        
+        res.json(updatedUser);
+    } catch (error) {
+        console.error('Error actualizando horas:', error);
+        res.status(500).json({ message: 'Error en el servidor' });
+    }
+});
+// Delete user by carnetNumber
+app.delete('/api/users/:carnet', async (req, res) => {
+    const { carnet } = req.params;
+
+    try {
+        const user = await prisma.user.findUnique({
+            where: { carnetNumber: carnet }
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        await prisma.user.delete({
+            where: { carnetNumber: carnet }
+        });
+
+        res.json({ message: 'Usuario eliminado exitosamente' });
+    } catch (error) {
+        console.error('Error eliminando usuario:', error);
         res.status(500).json({ message: 'Error en el servidor' });
     }
 });

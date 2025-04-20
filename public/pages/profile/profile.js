@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
     // Verificar si el usuario está autenticado
     const userData = JSON.parse(localStorage.getItem('user'));
 
@@ -26,14 +26,42 @@ document.addEventListener('DOMContentLoaded', function () {
     const careerInput = document.getElementById('career');
     const scheduleInput = document.getElementById('scheduleInput');
     const fieldAreaInput = document.getElementById('fieldArea');
-    const hoursInput = document.getElementById('hours'); // Añadido campo de horas
+    const hoursInput = document.getElementById('hours');
     const passwordInput = document.getElementById('password');
 
     // Variable para almacenar la imagen en base64
     let profileImageBase64 = null;
 
+    // Función para obtener los datos actualizados del usuario desde la API
+    async function fetchUserData() {
+        try {
+            const response = await fetch(`http://localhost:3000/api/users/${userData.id}`);
+            
+            if (!response.ok) {
+                throw new Error('Error al obtener los datos del usuario');
+            }
+            
+            const updatedUserData = await response.json();
+            
+            // Actualizar los datos en localStorage
+            localStorage.setItem('user', JSON.stringify({
+                ...userData,
+                ...updatedUserData
+            }));
+            
+            return updatedUserData;
+        } catch (error) {
+            console.error('Error:', error);
+            showStatusMessage('Error al cargar los datos del usuario', 'error');
+            return userData; // Retornar los datos viejos como fallback
+        }
+    }
+
+    // Cargar datos del usuario desde la API
+    const currentUserData = await fetchUserData();
+    
     // Cargar datos del usuario en el perfil
-    loadUserProfileData(userData);
+    loadUserProfileData(currentUserData);
 
     // Mostrar el formulario de edición cuando se hace clic en "Editar"
     btnEdit.addEventListener('click', function () {
@@ -43,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function () {
             editProfilePhoto.src = profilePhoto.src;
         }
         // Cargar datos del usuario en el formulario
-        loadUserFormData(userData);
+        loadUserFormData(currentUserData);
     });
 
     // Cambiar imagen al hacer clic
@@ -99,21 +127,28 @@ document.addEventListener('DOMContentLoaded', function () {
         const userScheduleElement = document.getElementById('userSchedule');
         const userFieldAreaElement = document.getElementById('userFieldArea');
         const userHoursElement = document.getElementById('userHours');
+        const userRoleElement = document.getElementById('userRole');
+        const userTutorElement = document.getElementById('userTutor');
+        const userLastLoginElement = document.getElementById('userLastLogin');
         
-        // Verificar si los elementos existen antes de asignar valores
         if (userNameElement) userNameElement.textContent = user.username || 'Usuario';
         if (userCarnetElement) userCarnetElement.textContent = user.carnetNumber || 'No disponible';
         if (userCareerElement) userCareerElement.textContent = user.career || 'No disponible';
         if (userScheduleElement) userScheduleElement.textContent = user.schedule || 'No disponible';
         if (userFieldAreaElement) userFieldAreaElement.textContent = user.areaTrabajo || 'No disponible';
-        if (userHoursElement == 0) userHoursElement.textContent = user.hours || 0;
+        if (userHoursElement) userHoursElement.textContent = user.hours || '0';
+        if (userRoleElement) userRoleElement.textContent = user.role || 'Voluntario';
+        if (userTutorElement) userTutorElement.textContent = user.tutor || 'No asignado';
+        
+        if (userLastLoginElement) {
+            const lastLogin = user.lastLogin ? new Date(user.lastLogin).toLocaleString() : 'Nunca';
+            userLastLoginElement.textContent = lastLogin;
+        }
 
-        // Verificar si existe la imagen de perfil
         if (profilePhoto && user.profileImage) {
             profilePhoto.src = user.profileImage;
         }
         
-        // Para depuración
         console.log('Datos de usuario cargados:', user);
     }
 
@@ -126,12 +161,11 @@ document.addEventListener('DOMContentLoaded', function () {
         if (fieldAreaInput) fieldAreaInput.value = user.areaTrabajo || '';
         if (hoursInput) hoursInput.value = user.hours || '0';
 
-        if (editProfilePhoto && user.profileImage) {
-            editProfilePhoto.src = user.profileImage;
+        if (editProfilePhoto) {
+            editProfilePhoto.src = user.profileImage || 'https://cdn-icons-png.flaticon.com/512/6522/6522581.png';
             profileImageBase64 = user.profileImage;
         }
         
-        // Para depuración
         console.log('Datos cargados en formulario:', {
             username: nameInput?.value,
             carnetNumber: carnetNumberInput?.value,
@@ -167,7 +201,6 @@ document.addEventListener('DOMContentLoaded', function () {
             updatedData.profileImage = profileImageBase64;
         }
 
-        // Para depuración
         console.log('Datos enviados:', updatedData);
         console.log('URL:', `http://localhost:3000/api/users/${userData.id}`);
 
